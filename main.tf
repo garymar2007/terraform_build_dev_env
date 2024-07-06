@@ -77,6 +77,7 @@ resource "aws_instance" "gary_instance" {
   key_name      = aws_key_pair.gary_key.key_name
   subnet_id     = aws_subnet.gary_public_subnet.id
   vpc_security_group_ids = [aws_security_group.gary_sg.id]
+  user_data = file("userdata.tpl")
 
   root_block_device {
     volume_size = 10
@@ -84,5 +85,16 @@ resource "aws_instance" "gary_instance" {
 
   tags = {
     Name = "dev-instance"
-  }  
+  }
+
+  provisioner "local-exec" {
+    command = templatefile("windows-ssh-config.tpl", {
+      hostname = self.public_ip,
+      user     = "ubuntu",
+      identityfile = "~/.ssh/awsGaryKey"
+    })
+    interpreter = ["Powershell", "-Command"]
+    #  In Linux, the interpreter is ["bash", "-c"]
+  }
 }
+
