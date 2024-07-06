@@ -65,3 +65,24 @@ resource "aws_security_group" "gary_sg" {
     ipv6_cidr_blocks = ["::/0"]
   }
 }
+
+resource "aws_key_pair" "gary_key" {
+  key_name   = "gary_key"
+  public_key = file("~/.ssh/awsGaryKey.pub")
+}
+
+resource "aws_instance" "gary_instance" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t2.micro"
+  key_name      = aws_key_pair.gary_key.key_name
+  subnet_id     = aws_subnet.gary_public_subnet.id
+  vpc_security_group_ids = [aws_security_group.gary_sg.id]
+
+  root_block_device {
+    volume_size = 10
+  }
+
+  tags = {
+    Name = "dev-instance"
+  }  
+}
