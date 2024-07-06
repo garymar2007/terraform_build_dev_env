@@ -46,11 +46,22 @@ resource "aws_route_table_association" "gary_public_subnet_association" {
   route_table_id = aws_route_table.gary_public_rt.id
 }
 
-# resource "aws_security_group" "gary_sg" {
-#   vpc_id = aws_vpc.gary_vpc.id
+resource "aws_security_group" "gary_sg" {
+  vpc_id = aws_vpc.gary_vpc.id
 
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["
+  ingress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
