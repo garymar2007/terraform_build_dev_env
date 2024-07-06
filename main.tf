@@ -88,13 +88,12 @@ resource "aws_instance" "gary_instance" {
   }
 
   provisioner "local-exec" {
-    command = templatefile("windows-ssh-config.tpl", {
+    command = templatefile("${var.host_os}-ssh-config.tpl", {
       hostname = self.public_ip,
       user     = "ubuntu",
       identityfile = "~/.ssh/awsGaryKey"
     })
-    interpreter = ["Powershell", "-Command"]
-    #  In Linux, the interpreter is ["bash", "-c"]
+    interpreter = var.host_os == "windows" ? ["Powershell", "-Command"] : ["bash", "-c"]
   }
 }
 
